@@ -3,6 +3,7 @@ The project is created using the JDBC driver.
 
 Project Name: COMP3005_Assignment3
 Repo: https://github.com/Arsenaultm90/COMP3005_Assignment3
+Video Link: https://vimeo.com/1135359263
 
 SETUP:
 1. Create a new database in a Postgres SQL server running on a local host for ease.
