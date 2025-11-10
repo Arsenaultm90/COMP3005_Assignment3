@@ -15,14 +15,15 @@ public class Crud {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
+        // try connection to server using values provided
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              Scanner scanner = new Scanner(System.in)) {
             System.out.println("Connected to the database.");
             boolean running = true;
 
+            // Main loop 
             while (running) {
-                System.out.println("\n--- STUDENT MENU ---");
+                System.out.println("\nSTUDENT MENU");
                 System.out.println("1. View all students");
                 System.out.println("2. Add student");
                 System.out.println("3. Update student email");
@@ -73,23 +74,30 @@ public class Crud {
         }
     }
 
-    // ---------------- CRUD METHODS ----------------
+    // CRUD METHODS
 
+    /* 
+     * Sends a string to select all data from the table
+     * Outputs, to console, all the current students in the table
+     */
     private static void getAllStudents(Connection conn) throws SQLException {
         String sql = "SELECT * FROM public.students";
         try (Statement statement = conn.createStatement();
-             ResultSet rs = statement.executeQuery(sql)) {
+             ResultSet results = statement.executeQuery(sql)) {
             System.out.println("\nStudents:");
-            while (rs.next()) {
-                System.out.println(rs.getInt("student_id") + " - " +
-                        rs.getString("first_name") + " " +
-                        rs.getString("last_name") + " | " +
-                        rs.getString("email") + " | " +
-                        rs.getDate("enrollment_date"));
+            while (results.next()) {
+                System.out.println(results.getInt("student_id") + " - " +
+                        results.getString("first_name") + " " +
+                        results.getString("last_name") + " | " +
+                        results.getString("email") + " | " +
+                        results.getDate("enrollment_date"));
             }
         }
     }
 
+    /*
+     * Prompt use to enter all required data to add student to the table
+     */
     private static void addStudent(Connection conn, String first, String last, String email, Date enrollmentDate) throws SQLException {
         String sql = "INSERT INTO public.students (first_name, last_name, email, enrollment_date) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -102,6 +110,9 @@ public class Crud {
         }
     }
 
+    /*
+     * Updates the students email where the StudentID matches
+     */
     private static void updateStudentEmail(Connection conn, int studentId, String newEmail) throws SQLException {
         String sql = "UPDATE public.students SET email = ? WHERE student_id = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -109,10 +120,14 @@ public class Crud {
             statement.setInt(2, studentId);
             int rows = statement.executeUpdate();
             if (rows > 0) System.out.println("Email updated.");
-            else System.out.println("⚠ Student not found.");
+            else System.out.println("Student not found.");
         }
     }
 
+    /*
+     * Deletes the row in the student tables where the StudentID matches.
+     * Otherwise, will output student cannot be found.
+     */
     private static void deleteStudent(Connection conn, int studentId) throws SQLException {
         String sql = "DELETE FROM public.students WHERE student_id = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
